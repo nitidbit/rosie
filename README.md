@@ -28,12 +28,20 @@ bundle install
 
 ## Configuration
 
+Configuration values can be set by placing a rosie.yml file in your config directory.  Default keys and values are as follows:
+
 <pre>
-YourApp::Application.configure do
-  config.rosie.something = something
-end
+# sample rosie.yml
+#
+backup_dir:backups    
+assets_dir:public/system
+mysql_bin_dir: 
+
 </pre>
 
+* `backup_dir`: This should be specified relative to your Rails root.  This setting would give you `#{Rails.root}/backups`.
+* `assets_dir`: This should be specified relative to your Rails root.  This directory is the one that is holding any system assets you'd like to have backed up along side the database dump.
+* `mysql_bin_dir`: If mysql and mysqldump are not on the path of the user running this rake task, you may need to specify the directory where those commandline applications live.  This should be an absolute path.   By default, Rosie will try to find these in the user's PATH.
 
 ## Validation
 
