@@ -3,7 +3,7 @@ require 'fileutils'
 require 'tmpdir'
 require 'yaml'
 
-rosie_config = {}
+rosie = nil
 ts = nil
 db_backup_dir = nil
 
@@ -29,8 +29,17 @@ end
 
 namespace :rosie do
   task :init do
-    rosie_config = Rosie::Config.new
-    db_backup_dir = File.join([Rails.root, rosie_config.backup_dir])
+    rosie = Rosie::Config.new
+    db_backup_dir = File.join([Rails.root, rosie.backup_dir])
+  end
+
+  desc "show config"
+  task :dump_config => :init do
+    puts "Rosie Config: read from #{rosie.config_file}"
+    puts "mysql: #{rosie.mysql_cmd}"
+    puts "mysqladmin: #{rosie.mysqladmin_cmd}"
+    puts "backup dir: #{rosie.backup_dir}"
+    puts "assets dir: #{rosie.assets_dir}"
   end
 
   desc "restore data from backup tarball"
@@ -57,7 +66,7 @@ namespace :rosie do
       image_tarball = File.join(data_dir, Dir.entries(data_dir).select{|f| f =~ /#{ts}.*\.tar/}.first)
       sql_dump = File.join(data_dir, Dir.entries(data_dir).select{|f| f =~ /#{ts}.*\.sql/}.first)
       args = get_db_cmdline_args
-      assets_dir = File.join(Rails.root, rosie_config.assets_dir)
+      assets_dir = File.join(Rails.root, rosie.assets_dir)
       sh "tar -C #{assets_dir} -xf #{image_tarball} && mysql #{args.join(' ')} #{dbcnf['database']} < #{sql_dump}"
       
     else
@@ -85,9 +94,8 @@ namespace :rosie do
       sh "mkdir -p #{db_backup_dir} && mysqldump #{args.join(' ')} --single-transaction #{dbcnf['database']} > #{path}"
     end
 
-    desc "backup assets in public/system/"
     task :assets => :init do
-      assets_dir = File.join(Rails.root, rosie_config.assets_dir)
+      assets_dir = File.join(Rails.root, rosie.assets_dir)
       sh "tar -C #{assets_dir} -cvf #{db_backup_dir}/rosie_backup_#{Rails.env}_#{ts}.tar ."
     end
 

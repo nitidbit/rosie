@@ -49,5 +49,10 @@ Tested on OSX 10.6/Ubuntu 11
 
 ## Usage
 
+## TODO
+* add ability to backup remote databases (not on localhost)
+* make Rails2.3.x compatible
+* add alternate database support
+
 ## Credits
 Developed by Jon Rogers and Jeremy Yun @ 2rye.com
