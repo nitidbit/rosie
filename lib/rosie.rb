@@ -32,8 +32,8 @@ module Rosie
       mysql_bin_dir.present? ? File.join(mysql_bin_dir, 'mysql') : 'mysql'
     end
 
-    def mysqladmin_cmd
-      mysql_bin_dir.present? ? File.join(mysql_bin_dir, 'mysqladmin') : 'mysqladmin'
+    def mysqldump_cmd
+      mysql_bin_dir.present? ? File.join(mysql_bin_dir, 'mysqldump') : 'mysqldump'
     end
   end
 
