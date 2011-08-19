@@ -32,7 +32,7 @@ namespace :rosie do
   end
 
   desc "show config"
-  task :dump_config => :init do
+  task :config => :init do
     puts "Rosie Config: read from #{rosie.config_file}"
     puts "mysql: #{rosie.mysql_cmd}"
     puts "mysqldump: #{rosie.mysqldump_cmd}"
