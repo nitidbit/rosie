@@ -4,7 +4,7 @@
 
 Backup and restore your MySQL db and dependent local assets (e.g. PaperClip uploads)
 
-Named after Rosie, the maid from the Jetsons (http://en.wikipedia.org/wiki/Rosie_the_Robot_Maid#Rosie).  The gem provides two rake tasks which will backup or restore a MySQL database along with any dependent file system assets (like uploaded files from PaperClip) into a single timestamped file.  
+The gem provides two rake tasks which will backup or restore a MySQL database along with any dependent file system assets (like uploaded files from PaperClip) into a single timestamped file.  
 
 ## Requirements
 
@@ -39,15 +39,56 @@ mysql_bin_dir:
 
 </pre>
 
-* `backup_dir`: This should be specified relative to your Rails root.  This setting would give you `#{Rails.root}/backups`.
-* `assets_dir`: This should be specified relative to your Rails root.  This directory is the one that is holding any system assets you'd like to have backed up along side the database dump.
+* `backup_dir`: This specifies the directory where the backup files will be stored.  It should be specified relative to your Rails root.  This setting would give you `#{Rails.root}/backups`.  
+* `assets_dir`: This specifies the directory which hold system assets you want to be added to the backup file.  This should be specified relative to your Rails root.
 * `mysql_bin_dir`: If mysql and mysqldump are not on the path of the user running this rake task, you may need to specify the directory where those commandline applications live.  This should be an absolute path.   By default, Rosie will try to find these in the user's PATH.
+
+The generated backup files (zipped tarballs) will be named by timestamp and placed in `backup_dir`.
+
+## Usage
+
+After installing the gem as described above, add the rosie.yml file to your #{Rails.root}/config/ directory with settings appropriate to your app.  The gem installs the following three tasks:
+
+* `rosie:config`
+* `rosie:backup`
+* `rosie:restore`
+
+
+### Task rosie:config
+
+`rosie:config` will show you what it's derived from your config.
+<code><pre>
+% rake rosie:config
+Rosie Config: read from /projects/boilerplate/config/rosie.yml
+mysql: mysql
+mysqldump: mysqldump
+backup dir: /projects/boilerplate/my_backups
+assets dir: /projects/boilerplate/public/my_assets
+</pre></code>
+
+
+### Task rosie:backup
+
+If you've checked out the configuration, and things look good, you can run a backup like this:
+<pre>
+% rake rosie:backup
+</pre>
+You'll find a new file under your `backups` dir (or whatever you've specified as the backup dir in your config).
+
+### Task rosie:restore
+
+To restore, run `rosie:restore`.  You'll need to add the commandline parameter `datafile` to tell rosie which file you are trying to restore from.
+
+For example:
+<pre>
+% rake rosie:restore datafile=~/Downloads/20110817180817.tgz
+</pre>
+
+Rosie does not run migrations, so if you're pulling data from a database whose schema may be out of date with the system on which you're restoring, you probably will want to run a db:migrate after the restore.
 
 ## Validation
 
-Tested on OSX 10.6/Ubuntu 11
-
-## Usage
+Tested with Ruby 1.9.2-p180 on OSX 10.6/Ubuntu 10.10/11
 
 ## TODO
 * add ability to backup remote databases (not on localhost)
@@ -56,3 +97,4 @@ Tested on OSX 10.6/Ubuntu 11
 
 ## Credits
 Developed by Jon Rogers and Jeremy Yun @ 2rye.com
+Named after Rosie, the maid from the Jetsons (http://techland.time.com/2010/04/20/sci-fi-sexy-time-all-time-hottest-robots/500_rosie_jetsons/).  
