@@ -8,7 +8,7 @@ The gem provides two rake tasks which will backup or restore a MySQL database al
 
 ## Requirements
 
-* Rails3
+* Rails (2.3.x or 3.x)
 * MySQL > 5 with commandline tools (mysql, mysqladmin, mysqldump)
 * Unix(ish) system shell with tar
 
@@ -25,6 +25,18 @@ Use bundler to install it:
 <pre>
 bundle install
 </pre>
+
+### Rails 2.3.x
+If you're using Rails 2, you'll need to add a couple lines to your `Rakefile`.  
+After all the requires, add the following:
+
+<code><pre>
+
+require 'rosie'
+
+Dir["#{Gem.searcher.find('rosie').full_gem_path}/lib/tasks/**/*.rake"].each { |ext| load ext }
+
+</pre></code>
 
 ## Configuration
 
@@ -92,7 +104,6 @@ Tested with Ruby 1.9.2-p180 on OSX 10.6/Ubuntu 10.10/11
 
 ## TODO
 * add ability to backup remote databases (not on localhost)
-* make Rails2.3.x compatible
 * add alternate database support
 
 ## Credits

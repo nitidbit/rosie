@@ -1,7 +1,9 @@
 rootpath = File.join(File.dirname(__FILE__),'..')
 require File.join(rootpath, 'lib/rosie/version')
 
-Dir[File.join(rootpath, "lib/tasks/**/*.rake")].each { |ext| load ext } if defined?(Rake)
+if /^3\./.match Rails.version
+  Dir[File.join(rootpath, "lib/tasks/**/*.rake")].each { |ext| load ext } if defined?(Rake)
+end
 
 module Rosie
   class Config
@@ -27,7 +29,7 @@ module Rosie
     def assets_dir
       File.join(Rails.root, @assets_dir)
     end
-
+    
     def mysql_cmd
       mysql_bin_dir.present? ? File.join(mysql_bin_dir, 'mysql') : 'mysql'
     end
