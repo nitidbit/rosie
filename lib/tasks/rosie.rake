@@ -37,7 +37,7 @@ namespace :rosie do
     puts "mysql: #{rosie.mysql_cmd}"
     puts "mysqldump: #{rosie.mysqldump_cmd}"
     puts "backup dir: #{rosie.backup_dir}"
-    puts "assets dir: #{rosie.assets_dir}"
+    puts "assets dirs: #{rosie.assets_dirs.join(', ')}"
   end
 
   desc "restore data from backup tarball"
@@ -54,7 +54,8 @@ namespace :rosie do
         raise msg
       end
       files_before = Dir.entries(tmp)
-      sh "cd #{tmp} && tar -xzf #{tarball}"
+      puts "Unpacking backup bundle"
+      `cd #{tmp} && tar -xzf #{tarball}`
       ts = Dir.entries(tmp).reject{ |f| files_before.include? f }.first
       unless ts.present?
         puts "*** Something went wrong while trying to unpack the datafile."
@@ -65,7 +66,8 @@ namespace :rosie do
       image_tarball = File.join(data_dir, Dir.entries(data_dir).select{|f| f =~ /#{ts}.*\.tar/}.first)
       sql_dump = File.join(data_dir, Dir.entries(data_dir).select{|f| f =~ /#{ts}.*\.sql/}.first)
       args = get_db_cmdline_args
-      `tar -C #{rosie.assets_dir} -xf #{image_tarball} && #{rosie.mysql_cmd} #{args.join(' ')} #{dbcnf['database']} < #{sql_dump}`
+      puts "Restoring assets and database"
+      `tar -C #{Rails.root} -xf #{image_tarball} && #{rosie.mysql_cmd} #{args.join(' ')} #{dbcnf['database']} < #{sql_dump}`
       
     else
       puts "*** You must specify the datafile from which to restore"
@@ -76,12 +78,13 @@ namespace :rosie do
 
   desc "backup all data"
   task :backup => ["rosie:backups:db", "rosie:backups:assets"] do
-    `cd #{rosie.backup_dir}/#{ts}/../ && tar -czvf #{ts}.tgz ./#{ts} && rm -rf #{ts}`
+    puts "Bundling backup files into #{ts}.tgz"
+    `cd #{rosie.backup_dir}/#{ts}/../ && tar -czf #{ts}.tgz ./#{ts} && rm -rf #{ts}`
   end
 
   namespace :backups do
     task :init => 'rosie:init' do
-      ts = Time.now.strftime('%Y%m%d%H%m%S')
+      ts = Time.now.strftime('%Y%m%d%H%M%S')
     end
 
     task :db => 'rosie:backups:init' do
@@ -89,11 +92,21 @@ namespace :rosie do
       db_file = "#{dbcnf['database']}-#{ts}.backup.sql"
       path = File.join(rosie.backup_dir, ts, db_file)
       args = get_db_cmdline_args
+      puts "Dumping database #{dbcnf['database']}"
       `mkdir -p #{rosie.backup_dir}/#{ts} && #{rosie.mysqldump_cmd} #{args.join(' ')} --single-transaction #{dbcnf['database']} > #{path}`
     end
 
     task :assets => 'rosie:backups:init' do
-      `tar -C #{rosie.assets_dir} -cvf #{rosie.backup_dir}/#{ts}/rosie_backup_#{Rails.env}_#{ts}.tar .`
+      tarball = "#{rosie.backup_dir}/#{ts}/rosie_backup_#{Rails.env}_#{ts}.tar"
+      rosie.assets_dirs.each_with_index do |dr, idx|
+        if File.exists?(dr)
+          puts "Backing up #{dr}"
+          tarargs = (idx==0) ? 'chf' : 'uhf'
+          sh "tar -C #{Rails.root} -#{tarargs} #{tarball} #{dr}"
+        else
+          puts "No directory #{dr} to backup"
+        end
+      end
     end
 
   end
