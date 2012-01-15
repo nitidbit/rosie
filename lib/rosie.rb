@@ -7,12 +7,12 @@ end
 
 module Rosie
   class Config
-    @@allowed_attributes = [:backup_dir, :assets_dirs, :mysql_bin_dir, :config_file]
+    @@allowed_attributes = [:backup_dir, :assets_dirs, :mysql_bin_dir, :config_file, :prefix]
     
     attr_accessor *@@allowed_attributes
 
     def initialize
-      _config = {"backup_dir"=>"backups", "assets_dirs"=> ["public/system"], "mysql_bin_dir"=>nil} 
+      _config = {"backup_dir"=>"backups", "assets_dirs"=> ["public/system"], "mysql_bin_dir"=>nil, 'prefix' => nil} 
       self.config_file = File.join(Rails.root, 'config/rosie.yml')
       if File.exists? self.config_file
         _config.merge!(YAML.load(File.open(self.config_file)))
@@ -33,6 +33,7 @@ module Rosie
     def mysqldump_cmd
       mysql_bin_dir.present? ? File.join(mysql_bin_dir, 'mysqldump') : 'mysqldump'
     end
+    
   end
 
 end

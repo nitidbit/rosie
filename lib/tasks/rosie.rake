@@ -38,6 +38,7 @@ namespace :rosie do
     puts "mysqldump: #{rosie.mysqldump_cmd}"
     puts "backup dir: #{rosie.backup_dir}"
     puts "assets dirs: #{rosie.assets_dirs.join(', ')}"
+    puts "prefix: #{rosie.prefix}"
   end
 
   desc "restore data from backup tarball"
@@ -78,8 +79,9 @@ namespace :rosie do
 
   desc "backup all data"
   task :backup => ["rosie:backups:db", "rosie:backups:assets"] do
-    puts "Bundling backup files into #{ts}.tgz"
-    `cd #{rosie.backup_dir}/#{ts}/../ && tar -czf #{ts}.tgz ./#{ts} && rm -rf #{ts}`
+    fname = (rosie.prefix.present? ? "%s_%s.tgz" % [ rosie.prefix, ts ] : "#{ts}.tgz")
+    puts "Bundling backup files into #{fname}"
+    `cd #{rosie.backup_dir}/#{ts}/../ && tar -czf #{fname}.tgz ./#{ts} && rm -rf #{ts}`
   end
 
   namespace :backups do

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rosie (0.0.1)
+    rosie (0.0.6)
 
 GEM
   remote: http://rubygems.org/
