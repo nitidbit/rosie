@@ -50,12 +50,14 @@ assets_dirs:
   - public/system
 mysql_bin_dir: 
 
+prefix:
+  - my_app
 </pre>
 
 * `backup_dir`: This specifies the directory where the backup files will be stored.  It should be specified relative to your Rails root.  This setting would give you `#{Rails.root}/backups`.  
 * `assets_dirs`: This specifies the directorys which hold system assets you want to be added to the backup file.  All entries should be specified relative to your Rails root.
 * `mysql_bin_dir`: If mysql and mysqldump are not on the path of the user running this rake task, you may need to specify the directory where those commandline applications live.  This should be an absolute path.   By default, Rosie will try to find these in the user's PATH.
-
+* `prefix`: If specified, this provides a way to prefix your database backup files with an app (or other) name.  If present, backup files will look like <my_app>_<timestamp>.tgz
 The generated backup files (zipped tarballs) will be named by timestamp and placed in `backup_dir`.
 
 ## Usage
@@ -76,9 +78,8 @@ Rosie Config: read from /projects/boilerplate/config/rosie.yml
 mysql: mysql
 mysqldump: mysqldump
 backup dir: /projects/boilerplate/my_backups
-assets dirs: 
-  - public/my_assets
-  - public/my_other_assets
+assets dirs: public/my_assets, public/my_other_assets
+prefix: my_backup_file_prefix
 </pre></code>
 
 
