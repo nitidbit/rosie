@@ -16,43 +16,32 @@ The gem provides two rake tasks which will backup or restore a MySQL database al
 
 Add rosie to your Gemfile:
 
-<pre>
-gem 'rosie'
-</pre>
+    gem 'rosie'
 
 Use bundler to install it:
 
-<pre>
-bundle install
-</pre>
+    bundle install
 
 ### Rails 2.3.x
 If you're using Rails 2, you'll need to add a couple lines to your `Rakefile`.  
 After all the requires, add the following:
-
-<code><pre>
-
-require 'rosie'
-
-Dir["#{Gem.searcher.find('rosie').full_gem_path}/lib/tasks/**/*.rake"].each { |ext| load ext }
-
-</pre></code>
-
+    
+    require 'rosie'
+    
+    Dir["#{Gem.searcher.find('rosie').full_gem_path}/lib/tasks/**/*.rake"].each { |ext| load ext }
+    
 ## Configuration
 
 Configuration values can be set by placing a rosie.yml file in your config directory.  Default keys and values are as follows:
 
-<pre>
-# sample rosie.yml
-#
-backup_dir:backups    
-assets_dirs:
-  - public/system
-mysql_bin_dir: 
-
-prefix:
-  - my_app
-</pre>
+    # sample rosie.yml
+    #
+    backup_dir:backups    
+    assets_dirs:
+      - public/system
+    mysql_bin_dir: 
+    
+    prefix: my_app
 
 * `backup_dir`: This specifies the directory where the backup files will be stored.  It should be specified relative to your Rails root.  This setting would give you `#{Rails.root}/backups`.  
 * `assets_dirs`: This specifies the directorys which hold system assets you want to be added to the backup file.  All entries should be specified relative to your Rails root.
@@ -72,23 +61,22 @@ After installing the gem as described above, add the rosie.yml file to your #{Ra
 ### Task rosie:config
 
 `rosie:config` will show you what it's derived from your config.
-<code><pre>
-% rake rosie:config
-Rosie Config: read from /projects/boilerplate/config/rosie.yml
-mysql: mysql
-mysqldump: mysqldump
-backup dir: /projects/boilerplate/my_backups
-assets dirs: public/my_assets, public/my_other_assets
-prefix: my_backup_file_prefix
-</pre></code>
+
+    % rake rosie:config
+    Rosie Config: read from /projects/boilerplate/config/rosie.yml
+    mysql: mysql
+    mysqldump: mysqldump
+    backup dir: /projects/boilerplate/my_backups
+    assets dirs: public/my_assets, public/my_other_assets
+    prefix: my_backup_file_prefix
 
 
 ### Task rosie:backup
 
 If you've checked out the configuration, and things look good, you can run a backup like this:
-<pre>
-% rake rosie:backup
-</pre>
+
+    % rake rosie:backup
+
 You'll find a new file under your `backups` dir (or whatever you've specified as the backup dir in your config).
 
 ### Task rosie:restore
@@ -96,9 +84,7 @@ You'll find a new file under your `backups` dir (or whatever you've specified as
 To restore, run `rosie:restore`.  You'll need to add the commandline parameter `datafile` to tell rosie which file you are trying to restore from.
 
 For example:
-<pre>
-% rake rosie:restore datafile=~/Downloads/20110817180817.tgz
-</pre>
+    % rake rosie:restore datafile=~/Downloads/20110817180817.tgz
 
 Rosie does not run migrations, so if you're pulling data from a database whose schema may be out of date with the system on which you're restoring, you probably will want to run a db:migrate after the restore.
 
