@@ -81,7 +81,7 @@ namespace :rosie do
   task :backup => ["rosie:backups:db", "rosie:backups:assets"] do
     fname = (rosie.prefix.present? ? "%s_%s.tgz" % [ rosie.prefix, ts ] : "#{ts}.tgz")
     puts "Bundling backup files into #{fname}"
-    `cd #{rosie.backup_dir}/#{ts}/../ && tar -czf #{fname}.tgz ./#{ts} && rm -rf #{ts}`
+    `cd #{rosie.backup_dir}/#{ts}/../ && tar -czf #{fname} ./#{ts} && rm -rf #{ts}`
   end
 
   namespace :backups do
